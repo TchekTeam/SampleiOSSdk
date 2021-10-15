@@ -1,19 +1,38 @@
 //
 //  AppDelegate.swift
-//  TchekSdkSample
+//  TchekSDKSample
 //
-//  Created by Silvio Pulitano on 16/09/2021.
+//  Created by Silvio Pulitano on 22/09/2021.
 //
 
 import UIKit
+import TchekSDK
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
+	public static var CUSTOM_UI: Bool {
+		get {
+			return UserDefaults.standard.object(forKey: "CUSTOM_UI") as? Bool ?? false
+		}
+		set {
+			UserDefaults.standard.set(newValue, forKey: "CUSTOM_UI")
+		}
+	}
 
 	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 		// Override point for customization after application launch.
+		
+		let builder = TchekBuilder(ui: { builder in
+			if AppDelegate.CUSTOM_UI {
+				builder.pageIndicatorDot = .darkGray
+				builder.pageIndicatorDotSelected = .blue
+				builder.alertButtonText = .orange
+				builder.accentColor = .orange
+			}
+		})
+		TchekSdk.configure(key: "6d52f1de4ffda05cb91c7468e5d99714f5bf3b267b2ae9cca8101d7897d2", builder: builder)
+		
 		return true
 	}
 
