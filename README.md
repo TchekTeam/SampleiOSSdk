@@ -62,7 +62,7 @@ navigationController.pushViewController(viewController, animated: true)
 
 # Launch a Fast Track
 ```
-let builder = TchekFastTrackBuilder(delegate: self) { builder in
+let builder = TchekFastTrackBuilder(tchekId: "any-tchek-id", delegate: self) { builder in
 	builder.btnAddExtraDamage = .red
 	builder.btnAddExtraDamageText = .orange
 	builder.btnCreateReport = .yellow
@@ -77,7 +77,7 @@ navigationController.pushViewController(viewController, animated: true)
 
 # Display a Report
 ```
-let builder = TchekReportBuilder(delegate: self) { builder in
+let builder = TchekReportBuilder(tchekId: "any-tchek-id", delegate: self) { builder in
 	builder.btnReportPrevColor = .lightGray
 	builder.btnReportPrevTextColor = .darkGray
 	builder.btnReportNextColor = .black
