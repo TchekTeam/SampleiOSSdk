@@ -105,22 +105,22 @@ public class TchekBuilder {
   public var pageIndicatorDotSelected: UIKit.UIColor
   @objc deinit
 }
-public protocol TchekFastTrackBuilderDelegate {
+public protocol TchekFastTrackDelegate {
   func onFastTrackEnd(tchek: TchekSDK.Tchek)
 }
 public class TchekFastTrackBuilder {
-  public init(tchekId: Swift.String, delegate: TchekSDK.TchekFastTrackBuilderDelegate, ui: ((TchekSDK.TchekFastTrackBuilder) -> Swift.Void)? = nil)
+  public init(tchekId: Swift.String, delegate: TchekSDK.TchekFastTrackDelegate, ui: ((TchekSDK.TchekFastTrackBuilder) -> Swift.Void)? = nil)
   public var btnAddExtraDamage: UIKit.UIColor
   public var btnAddExtraDamageText: UIKit.UIColor
   public var btnCreateReport: UIKit.UIColor
   public var btnCreateReportText: UIKit.UIColor
   @objc deinit
 }
-public protocol TchekReportBuilderDelegate {
+public protocol TchekReportDelegate {
   func onReportUpdate(tchek: TchekSDK.Tchek)
 }
 public class TchekReportBuilder {
-  public init(tchekId: Swift.String, delegate: TchekSDK.TchekReportBuilderDelegate, ui: ((TchekSDK.TchekReportBuilder) -> Swift.Void)? = nil)
+  public init(tchekId: Swift.String, delegate: TchekSDK.TchekReportDelegate, ui: ((TchekSDK.TchekReportBuilder) -> Swift.Void)? = nil)
   public var btnReportPrevTextColor: UIKit.UIColor
   public var btnReportPrevColor: UIKit.UIColor
   public var btnReportNextTextColor: UIKit.UIColor

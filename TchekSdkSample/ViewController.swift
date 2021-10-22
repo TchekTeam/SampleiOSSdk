@@ -155,15 +155,15 @@ extension ViewController: TchekShootInspectDelegate {
 	}
 }
 
-// MARK: Delegate TchekFastTrackBuilderDelegate
-extension ViewController: TchekFastTrackBuilderDelegate {
+// MARK: Delegate TchekFastTrackDelegate
+extension ViewController: TchekFastTrackDelegate {
 	func onFastTrackEnd(tchek: Tchek) {
 		print("\(self): onFastTrackEnd: tchek: \(tchek.id)")
 	}
 }
 
-// MARK: Delegate TchekReportBuilderDelegate
-extension ViewController: TchekReportBuilderDelegate {
+// MARK: Delegate TchekReportDelegate
+extension ViewController: TchekReportDelegate {
 	func onReportUpdate(tchek: Tchek) {
 		print("\(self): onReportUpdate: tchek: \(tchek.id)")
 	}
