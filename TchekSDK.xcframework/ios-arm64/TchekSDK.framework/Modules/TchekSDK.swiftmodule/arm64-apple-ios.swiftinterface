@@ -3,35 +3,40 @@
 // swift-module-flags: -target arm64-apple-ios13.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name TchekSDK
 import AVFoundation
 import CoreMotion
+import CryptoKit
 import Foundation
 import Swift
 @_exported import TchekSDK
 import UIKit
 import _Concurrency
-public struct TchekReport : Swift.Codable, Swift.Equatable {
+public struct TchekReport : Swift.Equatable {
   public var date: Foundation.Date
-  public var dateFirstPicture: Foundation.Date
+  public let dateFirstPicture: Foundation.Date
   public var clientLastName: Swift.String?
   public var clientFirstName: Swift.String?
   public var clientMail: Swift.String?
   public var clientPhone: Swift.String?
   public var personInCharge: Swift.String?
+  public var signatorySignatureName: Swift.String?
+  public var companySignatureName: Swift.String?
+  public var signatorySignatureUrl: Swift.String?
+  public var companySignatureUrl: Swift.String?
   public static func == (a: TchekSDK.TchekReport, b: TchekSDK.TchekReport) -> Swift.Bool
-  public func encode(to encoder: Swift.Encoder) throws
-  public init(from decoder: Swift.Decoder) throws
 }
-public struct Tchek {
+public struct TchekScan {
   public let id: Swift.String
   public let numberDamage: Swift.Int
   public let detectionFinished: Swift.Bool
+  public let inspected: Swift.Bool
   public let vehicle: TchekSDK.TchekVehicle
   public let damagesAuto: [TchekSDK.TchekDamage]
   public let damagesNotAuto: [TchekSDK.TchekDamage]
   public let imagesShootInspect: [TchekSDK.TchekImage]
   public let report: TchekSDK.TchekReport?
+  public let repairCosts: [TchekSDK.TchekRepairCost]
 }
 public protocol TchekShootInspectDelegate {
-  func onDetectionEnd(tchekId: Swift.String)
+  func onDetectionEnd(tchekScan: TchekSDK.TchekScan)
 }
 public class TchekShootInspectBuilder {
   public init(delegate: TchekSDK.TchekShootInspectDelegate, ui: ((TchekSDK.TchekShootInspectBuilder) -> Swift.Void)? = nil)
@@ -47,14 +52,21 @@ public class TchekShootInspectBuilder {
   public var thumbCorner: CoreGraphics.CGFloat
   public var btnTuto: UIKit.UIColor
   public var btnTutoText: UIKit.UIColor
+  public var tutoPageIndicatorDot: UIKit.UIColor
+  public var tutoPageIndicatorDotSelected: UIKit.UIColor
+  public var carOverlayGuide: UIKit.UIColor
   public var btnRetake: UIKit.UIColor
   public var btnRetakeText: UIKit.UIColor
   public var previewBg: UIKit.UIColor
+  public var endBg: UIKit.UIColor
+  public var endNavBarBg: UIKit.UIColor
+  public var endNavBarText: UIKit.UIColor
+  public var endText: UIKit.UIColor
   public var btnEndNext: UIKit.UIColor
   public var btnEndNextText: UIKit.UIColor
   @objc deinit
 }
-public struct TchekVehicle : Swift.Encodable, Swift.Equatable {
+public struct TchekVehicle : Swift.Equatable {
   public let id: Swift.String
   public var immat: Swift.String?
   public var brand: Swift.String?
@@ -62,17 +74,19 @@ public struct TchekVehicle : Swift.Encodable, Swift.Equatable {
   public var vin: Swift.String?
   public var color: Swift.String?
   public static func == (a: TchekSDK.TchekVehicle, b: TchekSDK.TchekVehicle) -> Swift.Bool
-  public func encode(to encoder: Swift.Encoder) throws
 }
 @_hasMissingDesignatedInitializers public class TchekSdk {
   public static func configure(key: Swift.String, builder: TchekSDK.TchekBuilder)
   public static func shootInspect(builder: TchekSDK.TchekShootInspectBuilder) -> UIKit.UIViewController
+  public static func shootInspectEnd(tchekId: Swift.String, builder: TchekSDK.TchekShootInspectBuilder) -> UIKit.UIViewController
   public static func fastTrack(builder: TchekSDK.TchekFastTrackBuilder) -> UIKit.UIViewController
   public static func report(builder: TchekSDK.TchekReportBuilder) -> UIKit.UIViewController
+  public static func deleteTchek(tchekId: Swift.String, onFailure: @escaping () -> Swift.Void, onSuccess: @escaping () -> Swift.Void)
   @objc deinit
 }
 public struct TchekImage {
   public let id: Swift.String
+  public let tchekId: Swift.String
   public let createdAt: Foundation.Date
   public let url: Swift.String
   public let width: Swift.Int
@@ -85,7 +99,7 @@ public struct TchekImageMetadata {
 public struct TchekDamage {
   public let id: Swift.String
   public let type: Swift.String?
-  public let severityDamage: Swift.String?
+  public let severity: Swift.String?
   public var isDeleted: Swift.Bool
   public let location: Swift.String?
   public let svgLocation: Swift.Int?
@@ -97,38 +111,78 @@ public struct TchekDamage {
 public class TchekBuilder {
   public init(ui: ((TchekSDK.TchekBuilder) -> Swift.Void))
   public var alertButtonText: UIKit.UIColor
-  public var accentColor: UIKit.UIColor {
-    get
-    set
-  }
-  public var pageIndicatorDot: UIKit.UIColor
-  public var pageIndicatorDotSelected: UIKit.UIColor
+  public var accentColor: UIKit.UIColor
   @objc deinit
 }
+public struct TchekRepairCost {
+  public let cost: Swift.Float
+}
 public protocol TchekFastTrackDelegate {
-  func onFastTrackEnd(tchek: TchekSDK.Tchek)
+  func onFastTrackEnd(tchekScan: TchekSDK.TchekScan)
 }
 public class TchekFastTrackBuilder {
   public init(tchekId: Swift.String, delegate: TchekSDK.TchekFastTrackDelegate, ui: ((TchekSDK.TchekFastTrackBuilder) -> Swift.Void)? = nil)
+  public var navBarBg: UIKit.UIColor
+  public var navBarText: UIKit.UIColor
+  public var fastTrackBg: UIKit.UIColor
+  public var damagesListBg: UIKit.UIColor
+  public var cardBg: UIKit.UIColor
+  public var fastTrackText: UIKit.UIColor
+  public var fastTrackPhotoAngle: UIKit.UIColor
+  public var fastTrackPhotoAngleText: UIKit.UIColor
+  public var damagesListText: UIKit.UIColor
+  public var damageCellBorder: UIKit.UIColor
+  public var damageCellText: UIKit.UIColor
+  public var vehiclePatternStroke: UIKit.UIColor
+  public var vehiclePatternDamageFill: UIKit.UIColor
+  public var vehiclePatternDamageStoke: UIKit.UIColor
   public var btnAddExtraDamage: UIKit.UIColor
   public var btnAddExtraDamageText: UIKit.UIColor
   public var btnCreateReport: UIKit.UIColor
   public var btnCreateReportText: UIKit.UIColor
+  public var btnValidateExtraDamage: UIKit.UIColor
+  public var btnValidateExtraDamageText: UIKit.UIColor
+  public var btnDeleteExtraDamage: UIKit.UIColor
+  public var btnDeleteExtraDamageText: UIKit.UIColor
   @objc deinit
 }
 public protocol TchekReportDelegate {
-  func onReportUpdate(tchek: TchekSDK.Tchek)
+  func onReportUpdate(tchekScan: TchekSDK.TchekScan)
 }
 public class TchekReportBuilder {
   public init(tchekId: Swift.String, delegate: TchekSDK.TchekReportDelegate, ui: ((TchekSDK.TchekReportBuilder) -> Swift.Void)? = nil)
-  public var btnReportPrevTextColor: UIKit.UIColor
-  public var btnReportPrevColor: UIKit.UIColor
-  public var btnReportNextTextColor: UIKit.UIColor
-  public var btnReportNextColor: UIKit.UIColor
-  public var reportPagingBg: UIKit.UIColor
-  public var reportPagingText: UIKit.UIColor
-  public var reportPagingTextSelected: UIKit.UIColor
-  public var reportPagingIndicator: UIKit.UIColor
+  public var bg: UIKit.UIColor
+  public var navBarBg: UIKit.UIColor
+  public var navBarText: UIKit.UIColor
+  public var reportText: UIKit.UIColor
+  public var btnPrevText: UIKit.UIColor
+  public var btnPrev: UIKit.UIColor
+  public var btnNextText: UIKit.UIColor
+  public var btnNext: UIKit.UIColor
+  public var pagingBg: UIKit.UIColor
+  public var pagingText: UIKit.UIColor
+  public var pagingTextSelected: UIKit.UIColor
+  public var pagingIndicator: UIKit.UIColor
+  public var textFieldPlaceHolderText: UIKit.UIColor
+  public var textFieldBorder: UIKit.UIColor
+  public var textFieldText: UIKit.UIColor
+  public var btnValidateSignature: UIKit.UIColor
+  public var btnValidateSignatureText: UIKit.UIColor
+  public var damageCellBorder: UIKit.UIColor
+  public var damageCellText: UIKit.UIColor
+  public var vehiclePatternStroke: UIKit.UIColor
+  public var vehiclePatternDamageFill: UIKit.UIColor
+  public var vehiclePatternDamageStoke: UIKit.UIColor
+  public var repairCostCellCostBg: UIKit.UIColor
+  public var repairCostCellCostText: UIKit.UIColor
+  public var repairCostCellText: UIKit.UIColor
+  public var repairCostCellCircleDamageCountBg: UIKit.UIColor
+  public var repairCostCellCircleDamageCountText: UIKit.UIColor
+  public var extraDamageBg: UIKit.UIColor
+  public var btnValidateExtraDamage: UIKit.UIColor
+  public var btnValidateExtraDamageText: UIKit.UIColor
+  public var btnDeleteExtraDamage: UIKit.UIColor
+  public var btnDeleteExtraDamageText: UIKit.UIColor
   @objc deinit
 }
 public struct TchekRoi {

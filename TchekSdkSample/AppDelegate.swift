@@ -25,8 +25,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		
 		let builder = TchekBuilder(ui: { builder in
 			if AppDelegate.CUSTOM_UI {
-				builder.pageIndicatorDot = .darkGray
-				builder.pageIndicatorDotSelected = .blue
 				builder.alertButtonText = .orange
 				builder.accentColor = .orange
 			}

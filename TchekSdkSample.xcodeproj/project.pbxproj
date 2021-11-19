@@ -9,8 +9,9 @@
 /* Begin PBXBuildFile section */
 		C0102DCD2719B6CA0020003D /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0102DCC2719B6CA0020003D /* TableViewCell.swift */; };
 		C0102DDA2719CE820020003D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0102DD92719CE810020003D /* AppDelegate.swift */; };
-		C0102DE22719DA2B0020003D /* TchekSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0102DE12719DA2B0020003D /* TchekSDK.xcframework */; };
-		C0102DE32719DA2B0020003D /* TchekSDK.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C0102DE12719DA2B0020003D /* TchekSDK.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C01AD07D2748128700B71C4C /* NavController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01AD07C2748128700B71C4C /* NavController.swift */; };
+		C01AD07E2748129900B71C4C /* TchekSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0102DE12719DA2B0020003D /* TchekSDK.xcframework */; };
+		C01AD07F2748129900B71C4C /* TchekSDK.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C0102DE12719DA2B0020003D /* TchekSDK.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C0D17FC426F3670B00EBB147 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D17FC326F3670B00EBB147 /* SceneDelegate.swift */; };
 		C0D17FC626F3670B00EBB147 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D17FC526F3670B00EBB147 /* ViewController.swift */; };
 		C0D17FC926F3670B00EBB147 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C0D17FC726F3670B00EBB147 /* Main.storyboard */; };
@@ -19,13 +20,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		C0102DC82719B6780020003D /* Embed Frameworks */ = {
+		C01AD0802748129900B71C4C /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				C0102DE32719DA2B0020003D /* TchekSDK.xcframework in Embed Frameworks */,
+				C01AD07F2748129900B71C4C /* TchekSDK.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -36,6 +37,7 @@
 		C0102DCC2719B6CA0020003D /* TableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
 		C0102DD92719CE810020003D /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C0102DE12719DA2B0020003D /* TchekSDK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = TchekSDK.xcframework; sourceTree = "<group>"; };
+		C01AD07C2748128700B71C4C /* NavController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavController.swift; sourceTree = "<group>"; };
 		C0D17FBE26F3670B00EBB147 /* TchekSdkSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TchekSdkSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0D17FC326F3670B00EBB147 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		C0D17FC526F3670B00EBB147 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -50,7 +52,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C0102DE22719DA2B0020003D /* TchekSDK.xcframework in Frameworks */,
+				C01AD07E2748129900B71C4C /* TchekSDK.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -80,6 +82,7 @@
 				C0102DD92719CE810020003D /* AppDelegate.swift */,
 				C0D17FC326F3670B00EBB147 /* SceneDelegate.swift */,
 				C0D17FC526F3670B00EBB147 /* ViewController.swift */,
+				C01AD07C2748128700B71C4C /* NavController.swift */,
 				C0102DCC2719B6CA0020003D /* TableViewCell.swift */,
 				C0D17FC726F3670B00EBB147 /* Main.storyboard */,
 				C0D17FCA26F3670D00EBB147 /* Assets.xcassets */,
@@ -107,7 +110,7 @@
 				C0D17FBA26F3670B00EBB147 /* Sources */,
 				C0D17FBB26F3670B00EBB147 /* Frameworks */,
 				C0D17FBC26F3670B00EBB147 /* Resources */,
-				C0102DC82719B6780020003D /* Embed Frameworks */,
+				C01AD0802748129900B71C4C /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -168,6 +171,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C01AD07D2748128700B71C4C /* NavController.swift in Sources */,
 				C0102DDA2719CE820020003D /* AppDelegate.swift in Sources */,
 				C0D17FC626F3670B00EBB147 /* ViewController.swift in Sources */,
 				C0102DCD2719B6CA0020003D /* TableViewCell.swift in Sources */,
