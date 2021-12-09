@@ -188,6 +188,8 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 #if __has_warning("-Watimport-in-framework-header")
 #pragma clang diagnostic ignored "-Watimport-in-framework-header"
 #endif
+@import CoreGraphics;
+@import UIKit;
 #endif
 
 #pragma clang diagnostic ignored "-Wproperty-attribute-mismatch"
@@ -210,6 +212,37 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 
 
 
+
+@class UIImage;
+@class NSNumber;
+@class NSCoder;
+
+IB_DESIGNABLE
+SWIFT_CLASS("_TtC8TchekSDK18UIImageViewAligned")
+@interface UIImageViewAligned : UIImageView
+@property (nonatomic, strong) UIImage * _Nullable image;
+@property (nonatomic, strong) UIImage * _Nullable highlightedImage;
+/// The option to align the content to the top.
+/// It is available in Interface Builder and should not be set programmatically. Use <code>alignment</code> property if you want to set alignment outside Interface Builder.
+@property (nonatomic) IBInspectable BOOL alignTop;
+/// The option to align the content to the left.
+/// It is available in Interface Builder and should not be set programmatically. Use <code>alignment</code> property if you want to set alignment outside Interface Builder.
+@property (nonatomic) IBInspectable BOOL alignLeft;
+/// The option to align the content to the right.
+/// It is available in Interface Builder and should not be set programmatically. Use <code>alignment</code> property if you want to set alignment outside Interface Builder.
+@property (nonatomic) IBInspectable BOOL alignRight;
+/// The option to align the content to the bottom.
+/// It is available in Interface Builder and should not be set programmatically. Use <code>alignment</code> property if you want to set alignment outside Interface Builder.
+@property (nonatomic) IBInspectable BOOL alignBottom;
+@property (nonatomic, getter=isHighlighted) BOOL highlighted;
+- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithImage:(UIImage * _Nullable)image OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithImage:(UIImage * _Nullable)image highlightedImage:(UIImage * _Nullable)highlightedImage OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+- (void)layoutSubviews;
+- (void)didMoveToSuperview;
+- (void)didMoveToWindow;
+@end
 
 #if __has_attribute(external_source_symbol)
 # pragma clang attribute pop

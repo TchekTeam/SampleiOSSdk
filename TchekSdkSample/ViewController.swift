@@ -213,9 +213,12 @@ class ViewController: UIViewController {
 					builder.pagingTextSelected = .white
 					builder.pagingIndicator = .white
 					
-					builder.textFieldPlaceHolderText = .white
-					builder.textFieldBorder = .white
-					builder.textFieldText = .white
+					builder.textFieldPlaceholderText = .black
+					builder.textFieldUnderline = .lightGray
+					builder.textFieldUnderlineSelected = .black
+					builder.textFieldPlaceholderText = .lightGray
+					builder.textFieldPlaceholderTextSelected = .black
+					builder.textFieldText = .black
 					
 					builder.btnValidateSignature = .yellow
 					builder.btnValidateSignatureText = .cyan

@@ -32,6 +32,7 @@ public struct TchekScan {
   public let damagesAuto: [TchekSDK.TchekDamage]
   public let damagesNotAuto: [TchekSDK.TchekDamage]
   public let imagesShootInspect: [TchekSDK.TchekImage]
+  public let imagesExternal: [TchekSDK.TchekImage]
   public let report: TchekSDK.TchekReport?
   public let repairCosts: [TchekSDK.TchekRepairCost]
 }
@@ -163,8 +164,10 @@ public class TchekReportBuilder {
   public var pagingText: UIKit.UIColor
   public var pagingTextSelected: UIKit.UIColor
   public var pagingIndicator: UIKit.UIColor
-  public var textFieldPlaceHolderText: UIKit.UIColor
-  public var textFieldBorder: UIKit.UIColor
+  public var textFieldPlaceholderText: UIKit.UIColor
+  public var textFieldPlaceholderTextSelected: UIKit.UIColor
+  public var textFieldUnderline: UIKit.UIColor
+  public var textFieldUnderlineSelected: UIKit.UIColor
   public var textFieldText: UIKit.UIColor
   public var btnValidateSignature: UIKit.UIColor
   public var btnValidateSignatureText: UIKit.UIColor
@@ -183,6 +186,67 @@ public class TchekReportBuilder {
   public var btnValidateExtraDamageText: UIKit.UIColor
   public var btnDeleteExtraDamage: UIKit.UIColor
   public var btnDeleteExtraDamageText: UIKit.UIColor
+  @objc deinit
+}
+public struct UIImageViewAlignmentMask : Swift.OptionSet {
+  public let rawValue: Swift.Int
+  public init(rawValue: Swift.Int)
+  public static let center: TchekSDK.UIImageViewAlignmentMask
+  public static let left: TchekSDK.UIImageViewAlignmentMask
+  public static let right: TchekSDK.UIImageViewAlignmentMask
+  public static let top: TchekSDK.UIImageViewAlignmentMask
+  public static let bottom: TchekSDK.UIImageViewAlignmentMask
+  public static let topLeft: TchekSDK.UIImageViewAlignmentMask
+  public static let topRight: TchekSDK.UIImageViewAlignmentMask
+  public static let bottomLeft: TchekSDK.UIImageViewAlignmentMask
+  public static let bottomRight: TchekSDK.UIImageViewAlignmentMask
+  public typealias ArrayLiteralElement = TchekSDK.UIImageViewAlignmentMask
+  public typealias Element = TchekSDK.UIImageViewAlignmentMask
+  public typealias RawValue = Swift.Int
+}
+@objc @_inheritsConvenienceInitializers @IBDesignable @_Concurrency.MainActor(unsafe) open class UIImageViewAligned : UIKit.UIImageView {
+  @_Concurrency.MainActor(unsafe) open var alignment: TchekSDK.UIImageViewAlignmentMask {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open var image: UIKit.UIImage? {
+    @_Concurrency.MainActor(unsafe) @objc get
+    @_Concurrency.MainActor(unsafe) @objc set
+  }
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open var highlightedImage: UIKit.UIImage? {
+    @_Concurrency.MainActor(unsafe) @objc get
+    @_Concurrency.MainActor(unsafe) @objc set
+  }
+  @objc @IBInspectable @_Concurrency.MainActor(unsafe) open var alignTop: Swift.Bool {
+    @objc get
+    @objc set
+  }
+  @objc @IBInspectable @_Concurrency.MainActor(unsafe) open var alignLeft: Swift.Bool {
+    @objc get
+    @objc set
+  }
+  @objc @IBInspectable @_Concurrency.MainActor(unsafe) open var alignRight: Swift.Bool {
+    @objc get
+    @objc set
+  }
+  @objc @IBInspectable @_Concurrency.MainActor(unsafe) open var alignBottom: Swift.Bool {
+    @objc get
+    @objc set
+  }
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open var isHighlighted: Swift.Bool {
+    @_Concurrency.MainActor(unsafe) @objc get
+    @_Concurrency.MainActor(unsafe) @objc set
+  }
+  @_Concurrency.MainActor(unsafe) public var realImageView: UIKit.UIImageView? {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreGraphics.CGRect)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(image: UIKit.UIImage?)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(image: UIKit.UIImage?, highlightedImage: UIKit.UIImage?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func layoutSubviews()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func didMoveToSuperview()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func didMoveToWindow()
   @objc deinit
 }
 public struct TchekRoi {
