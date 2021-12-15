@@ -10,23 +10,23 @@
 		C0102DCD2719B6CA0020003D /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0102DCC2719B6CA0020003D /* TableViewCell.swift */; };
 		C0102DDA2719CE820020003D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0102DD92719CE810020003D /* AppDelegate.swift */; };
 		C01AD07D2748128700B71C4C /* NavController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01AD07C2748128700B71C4C /* NavController.swift */; };
+		C0337F1B276A73230027F18B /* TchekSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0102DE12719DA2B0020003D /* TchekSDK.xcframework */; };
+		C0337F1C276A73230027F18B /* TchekSDK.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C0102DE12719DA2B0020003D /* TchekSDK.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C0D17FC426F3670B00EBB147 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D17FC326F3670B00EBB147 /* SceneDelegate.swift */; };
 		C0D17FC626F3670B00EBB147 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D17FC526F3670B00EBB147 /* ViewController.swift */; };
 		C0D17FC926F3670B00EBB147 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C0D17FC726F3670B00EBB147 /* Main.storyboard */; };
 		C0D17FCB26F3670D00EBB147 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C0D17FCA26F3670D00EBB147 /* Assets.xcassets */; };
 		C0D17FCE26F3670D00EBB147 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C0D17FCC26F3670D00EBB147 /* LaunchScreen.storyboard */; };
-		C0EDDA282762361F00EE0B52 /* TchekSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0102DE12719DA2B0020003D /* TchekSDK.xcframework */; };
-		C0EDDA292762361F00EE0B52 /* TchekSDK.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C0102DE12719DA2B0020003D /* TchekSDK.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		C0EDDA2A2762361F00EE0B52 /* Embed Frameworks */ = {
+		C0337F1D276A73230027F18B /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				C0EDDA292762361F00EE0B52 /* TchekSDK.xcframework in Embed Frameworks */,
+				C0337F1C276A73230027F18B /* TchekSDK.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -52,7 +52,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C0EDDA282762361F00EE0B52 /* TchekSDK.xcframework in Frameworks */,
+				C0337F1B276A73230027F18B /* TchekSDK.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -110,7 +110,7 @@
 				C0D17FBA26F3670B00EBB147 /* Sources */,
 				C0D17FBB26F3670B00EBB147 /* Frameworks */,
 				C0D17FBC26F3670B00EBB147 /* Resources */,
-				C0EDDA2A2762361F00EE0B52 /* Embed Frameworks */,
+				C0337F1D276A73230027F18B /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
