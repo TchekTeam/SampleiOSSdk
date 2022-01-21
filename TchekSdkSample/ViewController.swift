@@ -108,7 +108,7 @@ class ViewController: UIViewController {
 	@IBAction func actionShootInspect(_ sender: Any) {
 		let builder: TchekShootInspectBuilder
 		if AppDelegate.CUSTOM_UI {
-			builder = TchekShootInspectBuilder(delegate: self) { builder in
+			builder = TchekShootInspectBuilder(retryCount: 3, delegate: self) { builder in
 				builder.thumbBg = .brown
 				builder.thumbBorder = .blue
 				builder.thumbBorderBadImage = .orange
@@ -133,7 +133,7 @@ class ViewController: UIViewController {
 				builder.btnEndNextText = .cyan
 			}
 		} else {
-			builder = TchekShootInspectBuilder(delegate: self)
+			builder = TchekShootInspectBuilder(retryCount: 3, delegate: self)
 		}
 		let viewController: UIViewController
 		if let tchekIndex = tchekIndexSelected,
@@ -181,6 +181,8 @@ class ViewController: UIViewController {
 					builder.btnValidateExtraDamageText = .cyan
 					builder.btnDeleteExtraDamage = .red
 					builder.btnDeleteExtraDamageText = .white
+					builder.btnEditDamage = .purple
+					builder.btnEditDamageText = .white
 				}
 			} else {
 				builder = TchekFastTrackBuilder(tchekId: tchekId, delegate: self)
@@ -233,6 +235,11 @@ class ViewController: UIViewController {
 					builder.repairCostCellText = .red
 					builder.repairCostCellCircleDamageCountBg = .cyan
 					builder.repairCostCellCircleDamageCountText = .white
+					builder.repairCostBtnCostSettingsText = .white
+					builder.repairCostBtnCostSettings = .red
+					builder.repairCostSettingsText = . red
+					builder.btnValidateRepairCostEdit = .blue
+					builder.btnValidateRepairCostEditText = .orange
 					
 					builder.vehiclePatternStroke = .blue
 					builder.vehiclePatternDamageFill = .orange
@@ -243,6 +250,8 @@ class ViewController: UIViewController {
 					builder.btnValidateExtraDamageText = .cyan
 					builder.btnDeleteExtraDamage = .red
 					builder.btnDeleteExtraDamageText = .white
+					builder.btnEditDamage = .purple
+					builder.btnEditDamageText = .white
 				}
 			} else {
 				builder = TchekReportBuilder(tchekId: tchekId, delegate: self)

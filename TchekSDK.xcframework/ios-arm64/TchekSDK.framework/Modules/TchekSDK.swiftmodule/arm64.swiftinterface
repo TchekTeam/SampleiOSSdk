@@ -1,6 +1,6 @@
 // swift-interface-format-version: 1.0
 // swift-compiler-version: Apple Swift version 5.5 (swiftlang-1300.0.31.1 clang-1300.0.29.1)
-// swift-module-flags: -target arm64-apple-ios13.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name TchekSDK
+// swift-module-flags: -target arm64-apple-ios13.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -Onone -module-name TchekSDK
 import AVFoundation
 import CoreMotion
 import CryptoKit
@@ -29,18 +29,18 @@ public struct TchekScan {
   public let detectionFinished: Swift.Bool
   public let inspected: Swift.Bool
   public let vehicle: TchekSDK.TchekVehicle
-  public let damagesAuto: [TchekSDK.TchekDamage]
-  public let damagesNotAuto: [TchekSDK.TchekDamage]
+  public var damagesAuto: [TchekSDK.TchekDamage]
+  public var damagesNotAuto: [TchekSDK.TchekDamage]
   public let imagesShootInspect: [TchekSDK.TchekImage]
   public let imagesExternal: [TchekSDK.TchekImage]
   public let report: TchekSDK.TchekReport?
-  public let repairCosts: [TchekSDK.TchekRepairCost]
+  public var repairCosts: [TchekSDK.TchekRepairCost]
 }
 public protocol TchekShootInspectDelegate {
   func onDetectionEnd(tchekScan: TchekSDK.TchekScan)
 }
 public class TchekShootInspectBuilder {
-  public init(delegate: TchekSDK.TchekShootInspectDelegate, ui: ((TchekSDK.TchekShootInspectBuilder) -> Swift.Void)? = nil)
+  public init(retryCount: Swift.Int, delegate: TchekSDK.TchekShootInspectDelegate, ui: ((TchekSDK.TchekShootInspectBuilder) -> Swift.Void)? = nil)
   public var thumbBg: UIKit.UIColor
   public var thumbBorder: UIKit.UIColor
   public var thumbBorderBadImage: UIKit.UIColor
@@ -48,7 +48,7 @@ public class TchekShootInspectBuilder {
   public var thumbDot: UIKit.UIColor
   public var thumbBorderThickness: CoreGraphics.CGFloat {
     get
-    set
+    set(value)
   }
   public var thumbCorner: CoreGraphics.CGFloat
   public var btnTuto: UIKit.UIColor
@@ -110,13 +110,15 @@ public struct TchekDamage {
   public let bestRoi: TchekSDK.TchekRoi
 }
 public class TchekBuilder {
-  public init(ui: ((TchekSDK.TchekBuilder) -> Swift.Void))
+  public init(userId: Swift.String? = nil, ui: ((TchekSDK.TchekBuilder) -> Swift.Void))
   public var alertButtonText: UIKit.UIColor
   public var accentColor: UIKit.UIColor
   @objc deinit
 }
-public struct TchekRepairCost {
-  public let cost: Swift.Float
+public struct TchekRepairCost : Swift.Equatable {
+  public var costType: Swift.String
+  public var cost: Swift.Float
+  public static func == (a: TchekSDK.TchekRepairCost, b: TchekSDK.TchekRepairCost) -> Swift.Bool
 }
 public protocol TchekFastTrackDelegate {
   func onFastTrackEnd(tchekScan: TchekSDK.TchekScan)
@@ -145,6 +147,8 @@ public class TchekFastTrackBuilder {
   public var btnValidateExtraDamageText: UIKit.UIColor
   public var btnDeleteExtraDamage: UIKit.UIColor
   public var btnDeleteExtraDamageText: UIKit.UIColor
+  public var btnEditDamage: UIKit.UIColor
+  public var btnEditDamageText: UIKit.UIColor
   @objc deinit
 }
 public protocol TchekReportDelegate {
@@ -181,25 +185,32 @@ public class TchekReportBuilder {
   public var repairCostCellText: UIKit.UIColor
   public var repairCostCellCircleDamageCountBg: UIKit.UIColor
   public var repairCostCellCircleDamageCountText: UIKit.UIColor
+  public var repairCostBtnCostSettingsText: UIKit.UIColor
+  public var repairCostBtnCostSettings: UIKit.UIColor
+  public var repairCostSettingsText: UIKit.UIColor
+  public var btnValidateRepairCostEdit: UIKit.UIColor
+  public var btnValidateRepairCostEditText: UIKit.UIColor
   public var extraDamageBg: UIKit.UIColor
   public var btnValidateExtraDamage: UIKit.UIColor
   public var btnValidateExtraDamageText: UIKit.UIColor
   public var btnDeleteExtraDamage: UIKit.UIColor
   public var btnDeleteExtraDamageText: UIKit.UIColor
+  public var btnEditDamage: UIKit.UIColor
+  public var btnEditDamageText: UIKit.UIColor
   @objc deinit
 }
 public struct UIImageViewAlignmentMask : Swift.OptionSet {
   public let rawValue: Swift.Int
   public init(rawValue: Swift.Int)
-  public static let center: TchekSDK.UIImageViewAlignmentMask
-  public static let left: TchekSDK.UIImageViewAlignmentMask
-  public static let right: TchekSDK.UIImageViewAlignmentMask
-  public static let top: TchekSDK.UIImageViewAlignmentMask
-  public static let bottom: TchekSDK.UIImageViewAlignmentMask
-  public static let topLeft: TchekSDK.UIImageViewAlignmentMask
-  public static let topRight: TchekSDK.UIImageViewAlignmentMask
-  public static let bottomLeft: TchekSDK.UIImageViewAlignmentMask
-  public static let bottomRight: TchekSDK.UIImageViewAlignmentMask
+  public static var center: TchekSDK.UIImageViewAlignmentMask
+  public static var left: TchekSDK.UIImageViewAlignmentMask
+  public static var right: TchekSDK.UIImageViewAlignmentMask
+  public static var top: TchekSDK.UIImageViewAlignmentMask
+  public static var bottom: TchekSDK.UIImageViewAlignmentMask
+  public static var topLeft: TchekSDK.UIImageViewAlignmentMask
+  public static var topRight: TchekSDK.UIImageViewAlignmentMask
+  public static var bottomLeft: TchekSDK.UIImageViewAlignmentMask
+  public static var bottomRight: TchekSDK.UIImageViewAlignmentMask
   public typealias ArrayLiteralElement = TchekSDK.UIImageViewAlignmentMask
   public typealias Element = TchekSDK.UIImageViewAlignmentMask
   public typealias RawValue = Swift.Int
@@ -207,35 +218,35 @@ public struct UIImageViewAlignmentMask : Swift.OptionSet {
 @objc @_inheritsConvenienceInitializers @IBDesignable @_Concurrency.MainActor(unsafe) open class UIImageViewAligned : UIKit.UIImageView {
   @_Concurrency.MainActor(unsafe) open var alignment: TchekSDK.UIImageViewAlignmentMask {
     get
-    set
+    set(value)
   }
   @_Concurrency.MainActor(unsafe) @objc override dynamic open var image: UIKit.UIImage? {
     @_Concurrency.MainActor(unsafe) @objc get
-    @_Concurrency.MainActor(unsafe) @objc set
+    @_Concurrency.MainActor(unsafe) @objc set(newValue)
   }
   @_Concurrency.MainActor(unsafe) @objc override dynamic open var highlightedImage: UIKit.UIImage? {
     @_Concurrency.MainActor(unsafe) @objc get
-    @_Concurrency.MainActor(unsafe) @objc set
+    @_Concurrency.MainActor(unsafe) @objc set(newValue)
   }
   @objc @IBInspectable @_Concurrency.MainActor(unsafe) open var alignTop: Swift.Bool {
     @objc get
-    @objc set
+    @objc set(newValue)
   }
   @objc @IBInspectable @_Concurrency.MainActor(unsafe) open var alignLeft: Swift.Bool {
     @objc get
-    @objc set
+    @objc set(newValue)
   }
   @objc @IBInspectable @_Concurrency.MainActor(unsafe) open var alignRight: Swift.Bool {
     @objc get
-    @objc set
+    @objc set(newValue)
   }
   @objc @IBInspectable @_Concurrency.MainActor(unsafe) open var alignBottom: Swift.Bool {
     @objc get
-    @objc set
+    @objc set(newValue)
   }
   @_Concurrency.MainActor(unsafe) @objc override dynamic open var isHighlighted: Swift.Bool {
     @_Concurrency.MainActor(unsafe) @objc get
-    @_Concurrency.MainActor(unsafe) @objc set
+    @_Concurrency.MainActor(unsafe) @objc set(newValue)
   }
   @_Concurrency.MainActor(unsafe) public var realImageView: UIKit.UIImageView? {
     get

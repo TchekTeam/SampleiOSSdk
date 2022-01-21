@@ -23,7 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 		// Override point for customization after application launch.
 		
-		let builder = TchekBuilder(ui: { builder in
+		let builder = TchekBuilder(userId: "your_user_id", ui: { builder in
 			if AppDelegate.CUSTOM_UI {
 				builder.alertButtonText = .orange
 				builder.accentColor = .orange

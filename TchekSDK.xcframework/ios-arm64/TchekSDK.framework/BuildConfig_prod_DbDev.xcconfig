@@ -1,0 +1,15 @@
+//
+//  BuildConfig_prod.xcconfig
+//  tchek
+//
+//  Created by Silvio Pulitano on 15/09/2021.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+TCHEK_SDK_FLAVOR = prod_DbDev
+TCHEK_SDK_APP_BUNDLE_ID = ai.tchek.TchekSdk
+TCHEK_SDK_BASE_API_URL = http:/$()/alto.tchek.fr:1340
+TCHEK_SDK_API_VERSION = apiV1_sdk
+TCHEK_SDK_BASE_REPORT_URL = https:/$()/liveapi.tchek.ai
