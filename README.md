@@ -22,18 +22,19 @@ Due to usage of camera, add key `Privacy - Camera Usage Description` in your Inf
 # Usage
 In your AppDelegate you must call the configure method with your SDK Key
 ```
-let builder = TchekBuilder { builder in
-	builder.alertButtonText = .orange
-	builder.accentColor = .orange
-}
-
+let builder = TchekBuilder(userId: "your_user_id", ui: { builder in
+	if AppDelegate.CUSTOM_UI {
+		builder.alertButtonText = .orange
+		builder.accentColor = .orange
+	}
+})
 TchekSdk.configure(key: "my-tchek-sdk-key", builder: builder)
 ```
 # Launch a Shoot Inspect
 OR
 # Launch Shoot Inspect at End (useful to launch detection)
 ```
-let builder = TchekShootInspectBuilder(delegate: self) { builder in
+let builder = TchekShootInspectBuilder(retryCount: 3, delegate: self) { builder in
 	builder.thumbBg = .brown
 	builder.thumbBorder = .blue
 	builder.thumbBorderBadImage = .orange
@@ -41,30 +42,26 @@ let builder = TchekShootInspectBuilder(delegate: self) { builder in
 	builder.thumbDot = .cyan
 	builder.thumbBorderThickness = 0
 	builder.thumbCorner = 0
-
+	
 	builder.btnTuto = .yellow
 	builder.btnTutoText = .cyan
 	builder.tutoPageIndicatorDot = .darkGray
 	builder.tutoPageIndicatorDotSelected = .blue
- 
-	builder.carOverlayGuide = .systemPink
-
+	
+	builder.carOverlayGuide = .orange
+	
 	builder.btnRetake = .yellow
 	builder.btnRetakeText = .cyan
-
+	
 	builder.previewBg = .orange
-
+	
 	builder.btnEndNext = .yellow
 	builder.btnEndNextText = .cyan
-
-	builder.endBg = .black
-	builder.endNavBarBg = .purple
-	builder.endNavBarText = .red
 }
 
 let viewController = TchekSdk.shootInspect(builder: builder)
 // OR
-let viewController = TchekSdk.shootInspectEnd(tchekId: tchekId, builder: builder)
+let viewController = TchekSdk.shootInspectEnd(tchekId: "any-tchek-id", builder: builder)
 
 // Display the Shoot/Inspect UIViewController
 navigationController.pushViewController(viewController, animated: true)
@@ -80,25 +77,27 @@ let builder = TchekFastTrackBuilder(tchekId: "any-tchek-id", delegate: self) { b
 	builder.fastTrackPhotoAngle = .red
 	builder.fastTrackPhotoAngleText = .orange
 	builder.cardBg = .purple
-
+	
 	builder.damagesListBg = .purple
 	builder.damagesListText = .red
 	builder.damageCellText = .white
-	builder.damageCellBorder = .white
-
+	builder.damageCellBorder = .red
+	
 	builder.vehiclePatternStroke = .white
 	builder.vehiclePatternDamageFill = .orange
 	builder.vehiclePatternDamageStoke = .red
-
+	
 	builder.btnAddExtraDamage = .red
 	builder.btnAddExtraDamageText = .orange
 	builder.btnCreateReport = .yellow
 	builder.btnCreateReportText = .cyan
-
+	
 	builder.btnValidateExtraDamage = .yellow
 	builder.btnValidateExtraDamageText = .cyan
 	builder.btnDeleteExtraDamage = .red
 	builder.btnDeleteExtraDamageText = .white
+	builder.btnEditDamage = .purple
+	builder.btnEditDamageText = .white
 }
 
 let viewController = TchekSdk.fastTrack(builder: builder)
@@ -114,44 +113,54 @@ let builder = TchekReportBuilder(tchekId: "any-tchek-id", delegate: self) { buil
 	builder.navBarBg = .purple
 	builder.navBarText = .white
 	builder.reportText = .lightGray
-
+	
 	builder.btnPrev = .lightGray
 	builder.btnPrevText = .darkGray
 	builder.btnNext = .black
 	builder.btnNextText = .white
-
+	
 	builder.pagingBg = .purple
 	builder.pagingText = .lightText
 	builder.pagingTextSelected = .white
 	builder.pagingIndicator = .white
-
-	builder.textFieldPlaceHolderText = .white
-	builder.textFieldBorder = .white
-	builder.textFieldText = .white
-
+	
+	builder.textFieldPlaceholderText = .black
+	builder.textFieldUnderline = .lightGray
+	builder.textFieldUnderlineSelected = .black
+	builder.textFieldPlaceholderText = .lightGray
+	builder.textFieldPlaceholderTextSelected = .black
+	builder.textFieldText = .black
+	
 	builder.btnValidateSignature = .yellow
 	builder.btnValidateSignatureText = .cyan
-
+	
 	builder.damageCellText = .white
 	builder.damageCellBorder = .red
 	builder.vehiclePatternStroke = .white
 	builder.vehiclePatternDamageFill = .orange
-
+	
 	builder.repairCostCellCostBg = .yellow
 	builder.repairCostCellCostText = .cyan
 	builder.repairCostCellText = .red
 	builder.repairCostCellCircleDamageCountBg = .cyan
 	builder.repairCostCellCircleDamageCountText = .white
-
+	builder.repairCostBtnCostSettingsText = .white
+	builder.repairCostBtnCostSettings = .red
+	builder.repairCostSettingsText = . red
+	builder.btnValidateRepairCostEdit = .blue
+	builder.btnValidateRepairCostEditText = .orange
+	
 	builder.vehiclePatternStroke = .blue
 	builder.vehiclePatternDamageFill = .orange
 	builder.vehiclePatternDamageStoke = .red
-
+	
 	builder.extraDamageBg = .purple
 	builder.btnValidateExtraDamage = .yellow
 	builder.btnValidateExtraDamageText = .cyan
 	builder.btnDeleteExtraDamage = .red
 	builder.btnDeleteExtraDamageText = .white
+	builder.btnEditDamage = .purple
+	builder.btnEditDamageText = .white
 }
 
 let viewController = TchekSdk.report(builder: builder)
@@ -162,7 +171,7 @@ navigationController.pushViewController(viewController, animated: true)
 
 # Delete a Tchek
 ```
-TchekSdk.deleteTchek(tchekId: tchekId) {
+TchekSdk.deleteTchek(tchekId: "any-tchek-id") {
 	print("Delete Tchek Failed")
 } onSuccess: {
 	print("Delete Tchek Success")
