@@ -169,6 +169,24 @@ let viewController = TchekSdk.report(builder: builder)
 navigationController.pushViewController(viewController, animated: true)
 ```
 
+# Load All Tchek
+
+```
+TchekSdk.loadAllTchek(type: .mobile,
+					  deviceId: nil,
+					  search: nil,
+					  limit: 50,
+					  page: 0) { error in
+	print("error: \(error)")
+} onSuccess: { tcheks in
+	tcheks.forEach { tchek in
+		print("tchek.id: \(tchek.id), tchek.status: \(tchek.status)")
+	}
+}
+```
+
+![](https://github.com/sofianetchek/sample_ios_sdk/blob/main/Screenshots/loadAllTchek.png?raw=true "")
+
 # Delete a Tchek
 ```
 TchekSdk.deleteTchek(tchekId: "any-tchek-id") {

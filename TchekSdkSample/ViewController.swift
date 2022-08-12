@@ -159,8 +159,8 @@ class ViewController: UIViewController {
 					builder.navBarText = .red
 					builder.fastTrackBg = .lightGray
 					builder.fastTrackText = .purple
-					builder.fastTrackPhotoAngle = .red
-					builder.fastTrackPhotoAngleText = .orange
+					builder.damageLocation = .red
+					builder.damageLocationText = .orange
 					builder.cardBg = .purple
 					
 					builder.damagesListBg = .purple
@@ -170,7 +170,7 @@ class ViewController: UIViewController {
 					
 					builder.vehiclePatternStroke = .white
 					builder.vehiclePatternDamageFill = .orange
-					builder.vehiclePatternDamageStoke = .red
+					builder.vehiclePatternDamageStroke = .red
 					
 					builder.btnAddExtraDamage = .red
 					builder.btnAddExtraDamageText = .orange
@@ -243,7 +243,7 @@ class ViewController: UIViewController {
 					
 					builder.vehiclePatternStroke = .blue
 					builder.vehiclePatternDamageFill = .orange
-					builder.vehiclePatternDamageStoke = .red
+					builder.vehiclePatternDamageStroke = .red
 					
 					builder.extraDamageBg = .purple
 					builder.btnValidateExtraDamage = .yellow
@@ -265,7 +265,7 @@ class ViewController: UIViewController {
 
 // MARK: Delegate TchekShootInspectDelegate
 extension ViewController: TchekShootInspectDelegate {
-	func onDetectionEnd(tchekScan: TchekScan) {
+	func onDetectionEnd(tchekScan: TchekScan, immatriculation: String?) {
 		var array: [String] = []
 		if let tchekIdList = tchekIdList {
 			array.append(contentsOf: tchekIdList)
