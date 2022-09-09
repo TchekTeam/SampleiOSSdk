@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import TchekSDK
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -22,15 +21,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 		// Override point for customization after application launch.
-		
-		let builder = TchekBuilder(userId: "your_user_id", ui: { builder in
-			if AppDelegate.CUSTOM_UI {
-				builder.alertButtonText = .orange
-				builder.accentColor = .orange
-			}
-		})
-		TchekSdk.configure(key: "6d52f1de4ffda05cb91c7468e5d99714f5bf3b267b2ae9cca8101d7897d2", builder: builder)
-		
 		return true
 	}
 

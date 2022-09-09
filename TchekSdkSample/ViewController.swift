@@ -12,23 +12,34 @@ class ViewController: UIViewController {
 	
 	private let TCHEK_ID_LIST: String = "TCHEK_ID_LIST"
 	
-	private var tchekIdList: [String]? {
-		get {
-			return UserDefaults.standard.object(forKey: TCHEK_ID_LIST) as? [String]
-		}
-		set {
-			UserDefaults.standard.set(newValue, forKey: TCHEK_ID_LIST)
-		}
-	}
+	private var dynamicTchekScans: [SampleTchekScan] = []
+	
+	private var currentScans: [SampleTchekScan] = []
+	
+	private let preferences = Preferences()
 	
 	@IBOutlet weak var tableView: UITableView!
+	@IBOutlet weak var stackViewButton: UIStackView!
+	@IBOutlet weak var switchSSO: UISwitch!
+	@IBOutlet weak var txtFieldSSO: UITextField!
+	@IBOutlet weak var txtFieldTchekId: UITextField!
 	
-	private var tchekIndexSelected: Int? = nil
+	private var tchekSocketManager: TchekSocketManager?
+	private var newTchekEmitter: NewTchekEmitter?
+	private var detectionFinishedEmitter: DetectionFinishedEmitter?
+	private var createReportEmitter: CreateReportEmitter?
+	private var deleteTchekEmitter: DeleteTchekEmitter?
+	
+	override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+		super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+	}
+	
+	required init?(coder: NSCoder) {
+		super.init(coder: coder)
+	}
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		
-		print("\(self): viewDidLoad: tchekIdList: \(tchekIdList ?? [])")
 		
 		tableView.dataSource = self
 		tableView.delegate = self
@@ -36,11 +47,37 @@ class ViewController: UIViewController {
 		let btnNavBar = UIBarButtonItem(title: "Custom UI: \(AppDelegate.CUSTOM_UI)", style: .plain, target: self, action: #selector(actionCustomUI))
 		btnNavBar.tintColor = .white
 		navigationItem.setRightBarButton(btnNavBar, animated: true)
+		
+		let savedScans = preferences.previousScans
+		
+		dynamicTchekScans.append(contentsOf: savedScans)
+		
+		currentScans.append(contentsOf: dynamicTchekScans)
+		currentScans.sort { lhs, rhs in
+			return lhs.timestamp < rhs.timestamp
+		}
+		
+		updateAdapterAndPreferences()
+		tableView.reloadData()
+		
+		configure(show: false)
+		
+		txtFieldSSO.delegate = self
+		txtFieldTchekId.delegate = self
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		darkNavBarWithLogo()
+	}
+	
+	override func viewDidDisappear(_ animated: Bool) {
+		super.viewDidDisappear(animated)
+		tchekSocketManager?.destroy()
+	}
+	
+	override var preferredStatusBarStyle: UIStatusBarStyle {
+		return .darkContent
 	}
 	
 	@objc private func actionCustomUI() {
@@ -84,31 +121,119 @@ class ViewController: UIViewController {
 		}
 	}
 	
-	private func showAlert(title: String?, msg: String, style: UIAlertController.Style,
-						   btnCancel: String?,
-						   btnOk: String?, btnOkStyle: UIAlertAction.Style,
-						   onBtnOk: (() -> Void)?) {
-		let alertController = UIAlertController(title: title, message: msg, preferredStyle: style)
-		if let btnCancel = btnCancel {
-			alertController.addAction(UIAlertAction(title: btnCancel, style: .cancel, handler: nil))
+	private func updateAdapterAndPreferences() {
+		//Fire and forget
+		preferences.saveSampleScans(dynamicTchekScans)
+		
+		currentScans.removeAll()
+		currentScans.append(contentsOf: dynamicTchekScans)
+	}
+	
+	private func configure(show: Bool) {
+		if show {
+			stackViewButton.isHidden = false
+			tableView.isHidden = false
+		} else {
+			stackViewButton.isHidden = true
+			tableView.isHidden = true
 		}
-		if let btnOk = btnOk {
-			alertController.addAction(UIAlertAction(title: btnOk, style: btnOkStyle) { action in
-				onBtnOk?()
-			})
+	}
+	
+	@IBAction func actionConfigure(_ sender: Any) {
+		configure(show: false)
+		let builder = TchekBuilder(userId: "your_user_id", ui: { builder in
+			if AppDelegate.CUSTOM_UI {
+				builder.alertButtonText = .orange
+				builder.accentColor = .orange
+			}
+		})
+		if switchSSO.isOn {
+			TchekSdk.configure(keySSO: txtFieldSSO.text ?? "",
+							   builder: builder) { tchekSSO in
+				print("\(self): configure-onSuccess-tchekSSO: \(String(describing: tchekSSO)))")
+				self.configure(show: true)
+				self.socketSubscriber()
+			}
+		} else {
+			TchekSdk.configure(key: "6d52f1de4ffda05cb91c7468e5d99714f5bf3b267b2ae9cca8101d7897d2",
+							   builder: builder) {
+				self.configure(show: true)
+				self.socketSubscriber()
+			}
 		}
-		if let popoverController = alertController.popoverPresentationController { // iPad
-			popoverController.sourceView = self.view //to set the source of your alert
-			popoverController.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.maxY, width: 0, height: 0) // you can set this as per your requirement.
-			popoverController.permittedArrowDirections = [] //to hide the arrow of any particular direction
+	}
+	
+	@IBAction func actionLoadAll(_ sender: Any) {
+		TchekSdk.loadAllTchek(type: .mobile, deviceId: nil, search: nil, limit: 50, page: 0) { error in
+			self.showAlert(title: "Error", msg: error.errorMsg, style: .alert, btnCancel: nil, btnOk: "OK", btnOkStyle: .default, onBtnOk: nil)
+		} onSuccess: { tcheks in
+			tcheks.forEach { tchek in
+				print("\(self)-tchek.id: \(tchek.id), tchek.status: \(tchek.status), tchek.scanSync: \(tchek.scanSync), tchek.thumbnailUrl: \(String(describing: tchek.thumbnailUrl))")
+			}
 		}
-		present(alertController, animated: true, completion: nil)
+	}
+	
+	@IBAction func actionGetReportUrl(_ sender: Any) {
+		let tchekId = txtFieldTchekId.text ?? ""
+		TchekSdk.getReportUrl(tchekId: tchekId,
+							  validity: 1,
+							  cost: false) { error in
+			self.showAlert(title: nil,
+						   msg: error.errorMsg,
+						   style: .alert,
+						   btnCancel: nil,
+						   btnOk: "OK",
+						   btnOkStyle: .default,
+						   onBtnOk: nil)
+		} onSuccess: { url in
+			self.showAlert(title: nil,
+						   msg: url,
+						   style: .alert,
+						   btnCancel: "OK",
+						   btnOk: "Open in Browser",
+						   btnOkStyle: .default) {
+				guard let url = URL(string: url) else {
+					return
+				}
+				UIApplication.shared.open(url, options: [:], completionHandler: nil)
+			}
+		}
+	}
+	
+	private func socketSubscriber() {
+		tchekSocketManager = TchekSdk.socketManager(type: TchekScanType.mobile, device: nil)
+		
+		newTchekEmitter = NewTchekEmitter { tchek in
+			print("\(self)-newTchekEmitter-NewTchek-tchek.id: \(tchek.id), tchek.vehicle?.immat: \(String(describing: tchek.vehicle?.immat)), tchek.detectionFinished: \(tchek.detectionFinished), tchek.detectionInProgress: \(tchek.detectionInProgress)")
+			self.addNewScan(tchek.id)
+		}
+		
+		detectionFinishedEmitter = DetectionFinishedEmitter { tchek in
+			print("\(self)-detectionFinishedEmitter-detectionFinished-tchek.id: \(tchek.id), tchek.vehicle?.immat: \(String(describing: tchek.vehicle?.immat)), tchek.detectionFinished: \(tchek.detectionFinished), tchek.detectionInProgress: \(tchek.detectionInProgress)")
+		}
+
+		createReportEmitter = CreateReportEmitter { tchek in
+			print("\(self)-createReportEmitter-createReport-tchek.id: \(tchek.id), tchek.vehicle?.immat: \(String(describing: tchek.vehicle?.immat)), tchek.detectionFinished: \(tchek.detectionFinished), tchek.detectionInProgress: \(tchek.detectionInProgress)")
+		}
+
+		deleteTchekEmitter = DeleteTchekEmitter { tchekId in
+			print("\(self)-deleteTchekEmitter-deleteTchek-tchekId: \(tchekId)")
+		}
+				
+		tchekSocketManager!.subscribe(newTchekEmitter!)
+		tchekSocketManager!.subscribe(detectionFinishedEmitter!)
+		tchekSocketManager!.subscribe(createReportEmitter!)
+		tchekSocketManager!.subscribe(deleteTchekEmitter!)
 	}
 	
 	@IBAction func actionShootInspect(_ sender: Any) {
+		shootInspect()
+	}
+	
+	private func shootInspect(tchekScanId: String? = nil) {
 		let builder: TchekShootInspectBuilder
 		if AppDelegate.CUSTOM_UI {
-			builder = TchekShootInspectBuilder(retryCount: 3, delegate: self) { builder in
+			builder = TchekShootInspectBuilder(delegate: self) { builder in
 				builder.thumbBg = .brown
 				builder.thumbBorder = .blue
 				builder.thumbBorderBadImage = .orange
@@ -133,154 +258,178 @@ class ViewController: UIViewController {
 				builder.btnEndNextText = .cyan
 			}
 		} else {
-			builder = TchekShootInspectBuilder(retryCount: 3, delegate: self)
+			builder = TchekShootInspectBuilder(delegate: self)
 		}
 		let viewController: UIViewController
-		if let tchekIndex = tchekIndexSelected,
-		   let tchekId = tchekIdList?[tchekIndex] {
+		if let tchekScanId = tchekScanId {
 			builder.endBg = .black
 			builder.endNavBarBg = .purple
 			builder.endNavBarText = .red
-			viewController = TchekSdk.shootInspectEnd(tchekId: tchekId, builder: builder)
+			viewController = TchekSdk.shootInspectEnd(tchekId: tchekScanId, builder: builder)
 		} else {
 			viewController = TchekSdk.shootInspect(builder: builder)
 		}
 		navigationController?.pushViewController(viewController, animated: true)
 	}
 	
-	@IBAction func actionFastTrack(_ sender: Any) {
-		if let tchekIndex = tchekIndexSelected,
-		   let tchekId = tchekIdList?[tchekIndex] {
-			
-			let builder: TchekFastTrackBuilder
-			if AppDelegate.CUSTOM_UI {
-				builder = TchekFastTrackBuilder(tchekId: tchekId, delegate: self) { builder in
-					builder.navBarBg = .purple
-					builder.navBarText = .red
-					builder.fastTrackBg = .lightGray
-					builder.fastTrackText = .purple
-					builder.damageLocation = .red
-					builder.damageLocationText = .orange
-					builder.cardBg = .purple
-					
-					builder.damagesListBg = .purple
-					builder.damagesListText = .red
-					builder.damageCellText = .white
-					builder.damageCellBorder = .red
-					
-					builder.vehiclePatternStroke = .white
-					builder.vehiclePatternDamageFill = .orange
-					builder.vehiclePatternDamageStroke = .red
-					
-					builder.btnAddExtraDamage = .red
-					builder.btnAddExtraDamageText = .orange
-					builder.btnCreateReport = .yellow
-					builder.btnCreateReportText = .cyan
-					
-					builder.btnValidateExtraDamage = .yellow
-					builder.btnValidateExtraDamageText = .cyan
-					builder.btnDeleteExtraDamage = .red
-					builder.btnDeleteExtraDamageText = .white
-					builder.btnEditDamage = .purple
-					builder.btnEditDamageText = .white
-				}
-			} else {
-				builder = TchekFastTrackBuilder(tchekId: tchekId, delegate: self)
+	private func fastTrack(tchekScanId: String) {
+		let builder: TchekFastTrackBuilder
+		if AppDelegate.CUSTOM_UI {
+			builder = TchekFastTrackBuilder(tchekId: tchekScanId, delegate: self) { builder in
+				builder.navBarBg = .purple
+				builder.navBarText = .red
+				builder.fastTrackBg = .lightGray
+				builder.fastTrackText = .purple
+				builder.damageLocation = .red
+				builder.damageLocationText = .orange
+				builder.cardBg = .purple
+				builder.pageIndicatorDot = .systemPink
+				builder.pageIndicatorDotSelected = .blue
+				
+				builder.damageConfidence0 = .red
+				builder.damageConfidenceText0 = .white
+				builder.damageConfidence1 = .orange
+				builder.damageConfidenceText1 = .white
+				builder.damageConfidence2 = .green
+				builder.damageConfidenceText2 = .white
+				builder.damageType = .orange
+				builder.damageTypeText = .white
+				builder.damageLocation = .blue
+				builder.damageLocationText = .white
+				builder.damageDate = .white
+				builder.damageDateText = .darkGray
+				builder.damageNew = .green
+				builder.damageNewText = .white
+				builder.damageOld = .red
+				builder.damageOldText = .white
+				
+				builder.damageCellBorder = .red
+				builder.damageCellText = .white
+				builder.damagesListBg = .purple
+				builder.damagesListText = .red
+				
+				builder.vehiclePatternStroke = .white
+				builder.vehiclePatternDamageFill = .orange
+				builder.vehiclePatternOldDamageFill = .yellow
+				builder.vehiclePatternDamageStroke = .red
+				
+				builder.btnAddExtraDamage = .red
+				builder.btnAddExtraDamageText = .orange
+				builder.btnCreateReport = .yellow
+				builder.btnCreateReportText = .cyan
+				
+				builder.btnValidateExtraDamage = .yellow
+				builder.btnValidateExtraDamageText = .cyan
+				builder.btnDeleteExtraDamage = .red
+				builder.btnDeleteExtraDamageText = .white
+				builder.btnEditDamage = .purple
+				builder.btnEditDamageText = .white
 			}
-			
-			let viewController = TchekSdk.fastTrack(builder: builder)
-			self.present(viewController, animated: true, completion: nil)
+		} else {
+			builder = TchekFastTrackBuilder(tchekId: tchekScanId, delegate: self)
+		}
+		
+		let viewController = TchekSdk.fastTrack(builder: builder)
+		self.present(viewController, animated: true, completion: nil)
+	}
+	
+	private func report(tchekScanId: String) {
+		let builder: TchekReportBuilder
+		if AppDelegate.CUSTOM_UI {
+			builder = TchekReportBuilder(tchekId: tchekScanId, delegate: self) { builder in
+				builder.bg = .purple
+				builder.navBarBg = .purple
+				builder.navBarText = .white
+				builder.reportText = .lightGray
+				
+				builder.btnPrev = .lightGray
+				builder.btnPrevText = .darkGray
+				builder.btnNext = .black
+				builder.btnNextText = .white
+				
+				builder.pagingBg = .purple
+				builder.pagingText = .lightText
+				builder.pagingTextSelected = .white
+				builder.pagingIndicator = .white
+				
+				builder.textFieldUnderline = .lightGray
+				builder.textFieldUnderlineSelected = .black
+				builder.textFieldPlaceholderText = .lightGray
+				builder.textFieldPlaceholderTextSelected = .black
+				builder.textFieldText = .black
+				
+				builder.btnValidateSignature = .yellow
+				builder.btnValidateSignatureText = .cyan
+				
+				builder.damageCellText = .white
+				builder.damageCellBorder = .red
+				builder.vehiclePatternStroke = .white
+				builder.vehiclePatternDamageFill = .orange
+				
+				builder.repairCostCellCostBg = .yellow
+				builder.repairCostCellCostText = .cyan
+				builder.repairCostCellText = .red
+				builder.repairCostCellCircleDamageCountBg = .cyan
+				builder.repairCostCellCircleDamageCountText = .white
+				builder.repairCostBtnCostSettingsText = .white
+				builder.repairCostBtnCostSettings = .red
+				builder.repairCostSettingsText = . red
+				builder.btnValidateRepairCostEdit = .blue
+				builder.btnValidateRepairCostEditText = .orange
+				
+				builder.vehiclePatternStroke = .blue
+				builder.vehiclePatternDamageFill = .orange
+				builder.vehiclePatternOldDamageFill = .yellow
+				builder.vehiclePatternDamageStroke = .red
+				
+				builder.buyBackSectionCellBg = .darkGray
+				builder.buyBackSectionCellText = .red
+				builder.buyBackCellBg = .yellow
+				builder.buyBackCellText = .cyan
+				builder.buyBackCheckboxButton = .black
+				builder.buyBackCheckboxButtonSelected = .red
+				builder.buyBackListSeparator = .green
+				
+				builder.extraDamageBg = .purple
+				builder.btnValidateExtraDamage = .yellow
+				builder.btnValidateExtraDamageText = .cyan
+				builder.btnDeleteExtraDamage = .red
+				builder.btnDeleteExtraDamageText = .white
+				builder.btnEditDamage = .purple
+				builder.btnEditDamageText = .white
+			}
+		} else {
+			builder = TchekReportBuilder(tchekId: tchekScanId, delegate: self)
+		}
+		
+		let viewController = TchekSdk.report(builder: builder)
+		navigationController?.pushViewController(viewController, animated: true)
+	}
+	
+	private func addNewScan(_ tchekScanId: String) {
+		let scanExist = dynamicTchekScans.first { $0.tchekScanId == tchekScanId }
+		if scanExist == nil {
+			tableView.beginUpdates()
+			dynamicTchekScans.insert(SampleTchekScan(tchekScanId: tchekScanId, label: "By Me", timestamp: Date().timeIntervalSince1970), at: 0)
+			updateAdapterAndPreferences()
+			tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+			tableView.endUpdates()
 		}
 	}
 	
-	@IBAction func actionReport(_ sender: Any) {
-		if let tchekIndex = tchekIndexSelected,
-		   let tchekId = tchekIdList?[tchekIndex] {
-			
-			let builder: TchekReportBuilder
-			if AppDelegate.CUSTOM_UI {
-				builder = TchekReportBuilder(tchekId: tchekId, delegate: self) { builder in
-					builder.bg = .purple
-					builder.navBarBg = .purple
-					builder.navBarText = .white
-					builder.reportText = .lightGray
-					
-					builder.btnPrev = .lightGray
-					builder.btnPrevText = .darkGray
-					builder.btnNext = .black
-					builder.btnNextText = .white
-					
-					builder.pagingBg = .purple
-					builder.pagingText = .lightText
-					builder.pagingTextSelected = .white
-					builder.pagingIndicator = .white
-					
-					builder.textFieldPlaceholderText = .black
-					builder.textFieldUnderline = .lightGray
-					builder.textFieldUnderlineSelected = .black
-					builder.textFieldPlaceholderText = .lightGray
-					builder.textFieldPlaceholderTextSelected = .black
-					builder.textFieldText = .black
-					
-					builder.btnValidateSignature = .yellow
-					builder.btnValidateSignatureText = .cyan
-					
-					builder.damageCellText = .white
-					builder.damageCellBorder = .red
-					builder.vehiclePatternStroke = .white
-					builder.vehiclePatternDamageFill = .orange
-					
-					builder.repairCostCellCostBg = .yellow
-					builder.repairCostCellCostText = .cyan
-					builder.repairCostCellText = .red
-					builder.repairCostCellCircleDamageCountBg = .cyan
-					builder.repairCostCellCircleDamageCountText = .white
-					builder.repairCostBtnCostSettingsText = .white
-					builder.repairCostBtnCostSettings = .red
-					builder.repairCostSettingsText = . red
-					builder.btnValidateRepairCostEdit = .blue
-					builder.btnValidateRepairCostEditText = .orange
-					
-					builder.vehiclePatternStroke = .blue
-					builder.vehiclePatternDamageFill = .orange
-					builder.vehiclePatternDamageStroke = .red
-					
-					builder.extraDamageBg = .purple
-					builder.btnValidateExtraDamage = .yellow
-					builder.btnValidateExtraDamageText = .cyan
-					builder.btnDeleteExtraDamage = .red
-					builder.btnDeleteExtraDamageText = .white
-					builder.btnEditDamage = .purple
-					builder.btnEditDamageText = .white
-				}
-			} else {
-				builder = TchekReportBuilder(tchekId: tchekId, delegate: self)
-			}
-			
-			let viewController = TchekSdk.report(builder: builder)
-			navigationController?.pushViewController(viewController, animated: true)
-		}
-	}
 }
 
 // MARK: Delegate TchekShootInspectDelegate
 extension ViewController: TchekShootInspectDelegate {
 	func onDetectionEnd(tchekScan: TchekScan, immatriculation: String?) {
-		var array: [String] = []
-		if let tchekIdList = tchekIdList {
-			array.append(contentsOf: tchekIdList)
-		}
-		array.append(tchekScan.id)
-		tchekIdList = array
-		tableView.reloadData()
-		print("\(self): onDetectionEnd: tchekIdList: \(tchekIdList ?? [])")
+		addNewScan(tchekScan.id)
 	}
 }
 
 // MARK: Delegate TchekFastTrackDelegate
 extension ViewController: TchekFastTrackDelegate {
-	func onFastTrackEnd(tchekScan: TchekScan) {
-		print("\(self): onFastTrackEnd: tchekScan: \(tchekScan.id)")
+	func onReportCreated(tchekScan: TchekScan) {
+		print("\(self): onReportCreated: tchekScan: \(tchekScan.id)")
 	}
 }
 
@@ -295,9 +444,15 @@ extension ViewController: TchekReportDelegate {
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
 	// UITableViewDataSource
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		if let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCell.IDENTIFIER, for: indexPath) as? TableViewCell,
-		   let tchekId = tchekIdList?[indexPath.row] {
-			cell.data(tchekId: tchekId)
+		if let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCell.IDENTIFIER, for: indexPath) as? TableViewCell {
+			let item = currentScans[indexPath.row]
+			cell.data(sampleTchekScan: item, actionShootInspect: { tchekScanId in
+				self.shootInspect(tchekScanId: tchekScanId)
+			},actionFastTrack: { tchekScanId in
+				self.fastTrack(tchekScanId: tchekScanId)
+			},actionReport: { tchekScanId in
+				self.report(tchekScanId: tchekScanId)
+			})
 			return cell
 		}
 		return UITableViewCell()
@@ -306,45 +461,55 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
 	func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
 		return true
 	}
-		
+	
 	func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
 		guard editingStyle == .delete else {return}
-		if let tchekId = tchekIdList?[indexPath.row] {
-			showAlert(title: nil,
-					  msg: "Delete Tchek",
-					  style: .actionSheet,
-					  btnCancel: "Cancel",
-					  btnOk: "Delete",
-					  btnOkStyle: .destructive) {
-				TchekSdk.deleteTchek(tchekId: tchekId) {
-					self.showAlert(title: nil,
-								   msg: "Delete Tchek Failed",
-								   style: .alert,
-								   btnCancel: nil,
-								   btnOk: "OK",
-								   btnOkStyle: .default,
-								   onBtnOk: nil)
-				} onSuccess: {
-					self.tableView.beginUpdates()
-					self.tchekIdList?.remove(at: indexPath.row)
-					self.tableView.deleteRows(at: [indexPath], with: .automatic)
-					self.tableView.endUpdates()
+		let item = currentScans[indexPath.row]
+		let tchekId = item.tchekScanId
+		
+		showAlert(title: nil,
+				  msg: "Delete Tchek",
+				  style: .actionSheet,
+				  btnCancel: "Cancel",
+				  btnOk: "Delete",
+				  btnOkStyle: .destructive) {
+			TchekSdk.deleteTchek(tchekId: tchekId) {
+				self.showAlert(title: nil,
+							   msg: "Delete Tchek Failed",
+							   style: .alert,
+							   btnCancel: nil,
+							   btnOk: "OK",
+							   btnOkStyle: .default,
+							   onBtnOk: nil)
+			} onSuccess: {
+				self.tableView.beginUpdates()
+				if let index = self.dynamicTchekScans.firstIndex(where: { sampleTchekScan in
+					sampleTchekScan.tchekScanId == tchekId
+				}) {
+					self.dynamicTchekScans.remove(at: index)
 				}
+				
+				self.currentScans.remove(at: indexPath.row)
+				self.updateAdapterAndPreferences()
+				self.tableView.deleteRows(at: [indexPath], with: .automatic)
+				self.tableView.endUpdates()
 			}
 		}
 	}
 	
 	// UITableViewDelegate
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		return tchekIdList?.count ?? 0
+		return currentScans.count
+	}
+}
+
+extension ViewController: UITextFieldDelegate {
+	func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+		return true
 	}
 	
-	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		if indexPath.row == tchekIndexSelected {
-			tchekIndexSelected = nil
-			tableView.deselectRow(at: indexPath, animated: true)
-		} else {
-			tchekIndexSelected = indexPath.row
-		}
+	func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+		view.endEditing(true)
+		return true
 	}
 }
