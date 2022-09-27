@@ -31,9 +31,11 @@ let builder = TchekBuilder(userId: "your_user_id", ui: { builder in
 	}
 })
 // with SSO Key
-TchekSdk.configure(keySSO: txtFieldSSO.text ?? "",
-				   builder: builder) { tchekSSO in
-				// TODO
+TchekSdk.configure(keySSO: "SSO_KEY",
+					builder: builder) { apiError in
+	// TODO
+} onSuccess: { tchekSSO in
+	// TODO
 }
 
 // or TchekSDK Key
@@ -61,6 +63,9 @@ navigationController.pushViewController(viewController, animated: true)
 * Callback
 ```
 extension ViewController: TchekShootInspectDelegate {
+	func onDetectionInProgress() {
+	}
+
 	func onDetectionEnd(tchekScan: TchekScan, immatriculation: String?) {
 	}
 }

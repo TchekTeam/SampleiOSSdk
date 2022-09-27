@@ -149,7 +149,10 @@ class ViewController: UIViewController {
 		})
 		if switchSSO.isOn {
 			TchekSdk.configure(keySSO: txtFieldSSO.text ?? "",
-							   builder: builder) { tchekSSO in
+							   builder: builder) { apiError in
+				print("\(self): configure-onFailure-apiError: \(apiError))")
+				self.showAlert(title: nil, msg: "\(apiError)", style: .alert, btnCancel: nil, btnOk: "OK", btnOkStyle: .default, onBtnOk: nil)
+			} onSuccess: { tchekSSO in
 				print("\(self): configure-onSuccess-tchekSSO: \(String(describing: tchekSSO)))")
 				self.configure(show: true)
 				self.socketSubscriber()
@@ -421,6 +424,10 @@ class ViewController: UIViewController {
 
 // MARK: Delegate TchekShootInspectDelegate
 extension ViewController: TchekShootInspectDelegate {
+	func onDetectionInProgress() {
+		print("\(self): onDetectionInProgress")
+	}
+	
 	func onDetectionEnd(tchekScan: TchekScan, immatriculation: String?) {
 		addNewScan(tchekScan.id)
 	}
