@@ -1,0 +1,11 @@
+framework module TchekSDK {
+  umbrella header "TchekSDK.h"
+
+  export *
+  module * { export * }
+}
+
+module TchekSDK.Swift {
+  header "TchekSDK-Swift.h"
+  requires objc
+}
