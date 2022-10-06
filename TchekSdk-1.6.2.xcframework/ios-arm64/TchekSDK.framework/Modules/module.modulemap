@@ -6,6 +6,6 @@ framework module TchekSDK {
 }
 
 module TchekSDK.Swift {
-  header "TchekSDK-Swift.h"
-  requires objc
+    header "TchekSDK-Swift.h"
+    requires objc
 }
