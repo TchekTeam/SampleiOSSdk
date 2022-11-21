@@ -394,6 +394,9 @@ class ViewController: UIViewController {
 				builder.buyBackListSeparator = .green
 				
 				builder.extraDamageBg = .purple
+				builder.btnAddExtraDamagePlusIcon = .red
+				builder.btnAddExtraDamageBg = .blue
+				builder.btnAddExtraDamageBgPressed = .green
 				builder.btnValidateExtraDamage = .yellow
 				builder.btnValidateExtraDamageText = .cyan
 				builder.btnDeleteExtraDamage = .red
