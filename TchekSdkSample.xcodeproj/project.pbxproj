@@ -13,8 +13,8 @@
 		C0102DCD2719B6CA0020003D /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0102DCC2719B6CA0020003D /* TableViewCell.swift */; };
 		C0102DDA2719CE820020003D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0102DD92719CE810020003D /* AppDelegate.swift */; };
 		C01AD07D2748128700B71C4C /* NavController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01AD07C2748128700B71C4C /* NavController.swift */; };
-		C023D16229B5E57600DA6724 /* TchekSdk-1.6.5.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C023D16129B5E57600DA6724 /* TchekSdk-1.6.5.xcframework */; };
-		C023D16329B5E57600DA6724 /* TchekSdk-1.6.5.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C023D16129B5E57600DA6724 /* TchekSdk-1.6.5.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C0D0EE3D29F97F4900254105 /* TchekSdk-1.6.6.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0D0EE3C29F97F4800254105 /* TchekSdk-1.6.6.xcframework */; };
+		C0D0EE3E29F97F4900254105 /* TchekSdk-1.6.6.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C0D0EE3C29F97F4800254105 /* TchekSdk-1.6.6.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C0D17FC426F3670B00EBB147 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D17FC326F3670B00EBB147 /* SceneDelegate.swift */; };
 		C0D17FC626F3670B00EBB147 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D17FC526F3670B00EBB147 /* ViewController.swift */; };
 		C0D17FC926F3670B00EBB147 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C0D17FC726F3670B00EBB147 /* Main.storyboard */; };
@@ -23,13 +23,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		C023D16429B5E57600DA6724 /* Embed Frameworks */ = {
+		C0D0EE3F29F97F4900254105 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				C023D16329B5E57600DA6724 /* TchekSdk-1.6.5.xcframework in Embed Frameworks */,
+				C0D0EE3E29F97F4900254105 /* TchekSdk-1.6.6.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -43,7 +43,7 @@
 		C0102DCC2719B6CA0020003D /* TableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
 		C0102DD92719CE810020003D /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C01AD07C2748128700B71C4C /* NavController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavController.swift; sourceTree = "<group>"; };
-		C023D16129B5E57600DA6724 /* TchekSdk-1.6.5.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = "TchekSdk-1.6.5.xcframework"; sourceTree = "<group>"; };
+		C0D0EE3C29F97F4800254105 /* TchekSdk-1.6.6.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = "TchekSdk-1.6.6.xcframework"; sourceTree = "<group>"; };
 		C0D17FBE26F3670B00EBB147 /* TchekSdkSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TchekSdkSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0D17FC326F3670B00EBB147 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		C0D17FC526F3670B00EBB147 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -58,7 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C023D16229B5E57600DA6724 /* TchekSdk-1.6.5.xcframework in Frameworks */,
+				C0D0EE3D29F97F4900254105 /* TchekSdk-1.6.6.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -104,7 +104,7 @@
 		C0D17FD526F3674300EBB147 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				C023D16129B5E57600DA6724 /* TchekSdk-1.6.5.xcframework */,
+				C0D0EE3C29F97F4800254105 /* TchekSdk-1.6.6.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -119,7 +119,7 @@
 				C0D17FBA26F3670B00EBB147 /* Sources */,
 				C0D17FBB26F3670B00EBB147 /* Frameworks */,
 				C0D17FBC26F3670B00EBB147 /* Resources */,
-				C023D16429B5E57600DA6724 /* Embed Frameworks */,
+				C0D0EE3F29F97F4900254105 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
